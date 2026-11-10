@@ -1,619 +1,420 @@
-'use client';
+import Image from "next/image";
+import {
+  Bed,
+  Bathtub,
+  SquaresFour,
+  Ruler,
+  Car,
+  Lightning,
+  Drop,
+  Toilet,
+  TrendUp,
+  Medal,
+  Sparkle,
+  Buildings,
+  Tree,
+  ShieldCheck,
+  Handshake,
+  CheckCircle,
+  MapPin,
+  Phone,
+  WhatsappLogo,
+  ArrowUpRight,
+  Plus,
+} from "@phosphor-icons/react/ssr";
+import Nav from "@/components/Nav";
+import Reveal from "@/components/Reveal";
+import TaglineReveal from "@/components/TaglineReveal";
+import Carousel from "@/components/Carousel";
+import MortgageCalculator from "@/components/MortgageCalculator";
+import Logo from "@/components/Logo";
+import { brand, waLink, phoneDisplay, address, mapsEmbed, mapsLink } from "@/lib/site";
 
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { 
-  ChevronLeft, ChevronRight, MapPin, Phone, Mail, 
-  Facebook, Instagram, Home, Award, Shield, 
-  TrendingUp, CheckCircle, Calculator, HeartHandshake,
-  BedDouble, Bath, Ruler, LandPlot, CarFront, Zap, Droplets, Layers
-} from 'lucide-react';
-
-// --- CONFIGURATION & DATA ---
-const whatsappNumber = '6285377347995';
-const waLink = `https://wa.me/${whatsappNumber}?text=Halo%20Mahakarya%20Residence,%20saya%20tertarik%20untuk%20survey%20lokasi.`;
-
-// Unit Specification Data
 const unitSpecs = [
-  { icon: BedDouble, label: 'Kamar Tidur', value: '2 Unit' },
-  { icon: Bath, label: 'Kamar Mandi', value: '1 Unit' },
-  { icon: LandPlot, label: 'Luas Tanah', value: 'mulai 130 m²' },
-  { icon: Ruler, label: 'Luas Bangunan', value: 'mulai 60 m²' },
-  { icon: CarFront, label: 'Carport', value: '1 Mobil + Motor' },
-  { icon: Zap, label: 'Listrik', value: '2200 Watt' },
-  { icon: Droplets, label: 'Air', value: 'PDAM' },
-  { icon: Layers, label: 'Sanitary', value: 'American Standard' },
+  { icon: Bed, label: "Kamar tidur", value: "2" },
+  { icon: Bathtub, label: "Kamar mandi", value: "1" },
+  { icon: SquaresFour, label: "Luas tanah", value: "Mulai 130 m²" },
+  { icon: Ruler, label: "Luas bangunan", value: "Mulai 60 m²" },
+  { icon: Car, label: "Carport", value: "1 mobil + motor" },
+  { icon: Lightning, label: "Listrik", value: "2200 watt" },
+  { icon: Drop, label: "Air", value: "PDAM" },
+  { icon: Toilet, label: "Sanitary", value: "American Standard" },
 ];
 
-// Unit Gallery Images
 const unitGallery = [
-  { src: '/unit/layout-1.png', alt: 'Denah Layout Unit' },
-  { src: '/unit/render-1.png', alt: 'Fasad Depan Utama' },
-  { src: '/unit/render-2.png', alt: 'Ruang Tengah Open Space' },
-  { src: '/unit/render-3.png', alt: 'Ruang Tengah Open Space' },
-  { src: '/unit/render-4.png', alt: 'Ruang Tengah Open Space' },
-  { src: '/unit/render-5.png', alt: 'Kamar Tidur Utama' },
-  { src: '/unit/render-6.png', alt: 'Kamar Tidur Utama' },
-  { src: '/unit/render-7.png', alt: 'Kamar Tidur Anak' },
-  { src: '/unit/render-8.png', alt: 'Kamar Tidur Anak' },
-  { src: '/unit/render-9.png', alt: 'Dapur Modern' },
-  { src: '/unit/render-10.png', alt: 'Ruang Makan' },
-  { src: '/unit/render-11.png', alt: 'Area Laundry' },
-  { src: '/unit/render-12.png', alt: 'Area Jemur' }
+  { src: "/unit/render-1.png", alt: "Fasad depan rumah" },
+  { src: "/unit/layout-1.png", alt: "Denah layout unit" },
+  { src: "/unit/render-2.png", alt: "Ruang tengah open space" },
+  { src: "/unit/render-3.png", alt: "Ruang tengah, sudut lain" },
+  { src: "/unit/render-4.png", alt: "Ruang tengah menuju dapur" },
+  { src: "/unit/render-5.png", alt: "Kamar tidur utama" },
+  { src: "/unit/render-6.png", alt: "Kamar tidur utama, sisi lemari" },
+  { src: "/unit/render-7.png", alt: "Kamar tidur anak" },
+  { src: "/unit/render-8.png", alt: "Kamar tidur anak, sisi meja belajar" },
+  { src: "/unit/render-9.png", alt: "Dapur modern" },
+  { src: "/unit/render-10.png", alt: "Ruang makan" },
+  { src: "/unit/render-11.png", alt: "Area laundry" },
+  { src: "/unit/render-12.png", alt: "Area jemur" },
 ];
 
-// Strategic Location Images
-// FIXED: Added '/' at the start and removed query params (?w=800)
 const locationImages = [
-  { name: 'Universitas Jambi (UNJA)', img: '/unja.jpg' },
-  { name: 'Kompleks Perkantoran Gubernur', img: '/kantorgubernur.jpg' },
-  { name: 'Mall Jamtos', img: '/jamtos.jpeg' },
-  { name: 'RSUD Raden Mattaher', img: '/rsudrm.jpeg' },
+  { src: "/unja.jpg", alt: "Universitas Jambi (UNJA)" },
+  { src: "/kantorgubernur.jpg", alt: "Kompleks Perkantoran Gubernur Jambi" },
+  { src: "/jamtos.jpeg", alt: "Mall Jamtos" },
+  { src: "/rsudrm.jpeg", alt: "RSUD Raden Mattaher" },
 ];
 
 const features = [
-  { icon: TrendingUp, title: 'WORTH TO BUY!', desc: 'Rumah dengan Harga Di Bawah Pasaran dan Menjadi Investasi yang Baik' },
-  { icon: Award, title: 'Developer Terpercaya', desc: 'Persembahan dari Developer Ternama' },
-  { icon: CheckCircle, title: 'Kualitas Material Terbaik', desc: 'Sanitary by American Standard, Paloma' },
-  { icon: Home, title: 'Desain Mewah Art Deco', desc: 'Khas Eropa dari Arsitek Ternama' },
-  { icon: MapPin, title: 'Lingkungan Nyaman', desc: 'Asri dan AMAN DARI BANJIR' },
-  { icon: Shield, title: 'Legalitas Dijamin Aman', desc: 'SHM, IMB, PBB Pecah Per Kavling, Siap PEMBUKTIAN KE BPN' },
-  { icon: HeartHandshake, title: 'Skema Syariah', desc: 'Cicil ke Developer atau KPR Syariah (Tanpa Riba)' },
+  { icon: TrendUp, title: "Harga di bawah pasaran", desc: "Layak ditinggali sendiri sekaligus menjadi investasi yang nilainya terus tumbuh." },
+  { icon: Medal, title: "Developer terpercaya", desc: "Dibangun oleh developer ternama dengan rekam jejak proyek di Jambi." },
+  { icon: Sparkle, title: "Material berkualitas", desc: "Sanitary American Standard dan Paloma terpasang di setiap unit." },
+  { icon: Buildings, title: "Desain Art Deco", desc: "Fasad bergaya Eropa rancangan arsitek ternama, tampil beda di kelasnya." },
+  { icon: Tree, title: "Lingkungan asri dan bebas banjir", desc: "Kawasan hijau yang tenang dan aman dari genangan saat musim hujan." },
+  { icon: ShieldCheck, title: "Legalitas aman", desc: "SHM, IMB, dan PBB sudah pecah per kavling. Siap dibuktikan langsung ke BPN." },
+  { icon: Handshake, title: "Skema syariah", desc: "Cicil langsung ke developer atau lewat KPR Syariah tanpa riba." },
 ];
 
 const uspPoints = [
-  { title: 'Mempermudah Aktivitas Sehari-hari', desc: 'Akses mudah ke segala kebutuhan.' },
-  { title: 'Hemat WAKTU & BIAYA', desc: 'Kurangi biaya transportasi harian Anda.' },
-  { title: 'Perjalanan Lebih CEPAT', desc: 'Kurangi stres macet, lebih banyak waktu untuk keluarga.' },
-  { title: 'Passive Income Potensial', desc: 'Sangat laku jika disewakan ke mahasiswa/pekerja.' },
-  { title: 'Investasi Masa Depan', desc: 'Kenaikan nilai properti yang pasti di area berkembang.' },
-  { title: 'Lokasi Premium', desc: 'Dekat UNJA, Perkantoran Gubernur, Jamtos, Trona Express, Terminal Alam Barajo, Sekolah Al Azhar, RSUD Raden Mattaher.' },
+  { title: "Urusan harian lebih dekat", desc: "Kampus, kantor, sekolah, dan pusat belanja dalam jangkauan singkat." },
+  { title: "Hemat waktu dan biaya", desc: "Ongkos transportasi harian berkurang karena jarak tempuh lebih pendek." },
+  { title: "Bebas macet panjang", desc: "Lebih sedikit waktu di jalan, lebih banyak waktu bersama keluarga." },
+  { title: "Potensi pemasukan pasif", desc: "Diminati penyewa dari kalangan mahasiswa dan pekerja sekitar." },
+  { title: "Nilai properti tumbuh", desc: "Berada di kawasan Kota Baru yang terus berkembang." },
 ];
 
-// --- COMPONENT: MORTGAGE CALCULATOR ---
-const MortgageCalculator = () => {
-  const [price, setPrice] = useState(400000000);
-  const [dpPercent, setDpPercent] = useState(20);
-  const [years, setYears] = useState(15);
-  const [margin, setMargin] = useState(8); 
-  const [monthlyPayment, setMonthlyPayment] = useState(0);
+const nearby = [
+  "Universitas Jambi (UNJA)",
+  "Kompleks Perkantoran Gubernur",
+  "Mall Jamtos",
+  "Trona Express",
+  "Terminal Alam Barajo",
+  "Sekolah Al Azhar",
+  "RSUD Raden Mattaher",
+];
 
-  useEffect(() => {
-    const dpAmount = price * (dpPercent / 100);
-    const principal = price - dpAmount;
-    const totalMargin = principal * (margin / 100) * years;
-    const totalCost = principal + totalMargin;
-    const monthly = totalCost / (years * 12);
-    setMonthlyPayment(monthly);
-  }, [price, dpPercent, years, margin]);
+const faqs = [
+  {
+    q: "Berapa harga rumah di Shraya Living?",
+    a: "Harga mulai Rp400 jutaan, syarat dan ketentuan berlaku. Harga per kavling bisa berbeda tergantung luas tanah, jadi hubungi kami lewat WhatsApp untuk daftar harga terbaru.",
+  },
+  {
+    q: "Skema pembayaran apa saja yang tersedia?",
+    a: "Anda bisa mencicil langsung ke developer atau memakai KPR Syariah dengan akad murabahah, tanpa riba.",
+  },
+  {
+    q: "Bagaimana status legalitasnya?",
+    a: "Setiap kavling sudah memiliki SHM, IMB, dan PBB yang dipecah per kavling. Dokumen siap dibuktikan langsung ke BPN.",
+  },
+  {
+    q: "Berapa luas tanah dan bangunan setiap unit?",
+    a: "Luas tanah mulai 130 m² dan luas bangunan mulai 60 m², dengan 2 kamar tidur, 1 kamar mandi, dan carport untuk 1 mobil plus motor.",
+  },
+  {
+    q: "Di mana lokasi tepatnya?",
+    a: `${address}. Sekitar 10 menit berkendara ke UNJA dan Kompleks Perkantoran Gubernur.`,
+  },
+  {
+    q: "Apakah kawasannya rawan banjir?",
+    a: "Tidak. Lingkungan Shraya Living asri dan aman dari banjir.",
+  },
+  {
+    q: "Apakah cocok untuk disewakan?",
+    a: "Cocok. Lokasinya dekat kampus dan perkantoran, sehingga diminati penyewa dari kalangan mahasiswa dan pekerja.",
+  },
+  {
+    q: "Bagaimana cara survey lokasi?",
+    a: "Kirim pesan lewat WhatsApp, lalu tim kami mengatur jadwal kunjungan sesuai waktu Anda. Konsultasi gratis tanpa kewajiban membeli.",
+  },
+];
 
-  const formatRupiah = (num: number) => {
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
-  };
-
-  return (
-    <div className="bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-gray-100 max-w-2xl mx-auto mt-8">
-      <div className="flex items-center space-x-2 mb-6 text-[#14305D]">
-        <Calculator className="w-6 h-6" />
-        <h3 className="text-2xl font-bold">Simulasi KPR Syariah (Murabahah)</h3>
-      </div>
-      
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Harga Properti</label>
-            <input 
-              type="number" 
-              value={price} 
-              onChange={(e) => setPrice(Number(e.target.value))}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#14305D] outline-none"
-            />
-            <p className="text-xs text-gray-500 mt-1">{formatRupiah(price)}</p>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Uang Muka / DP (%)</label>
-            <input 
-              type="range" 
-              min="0" max="50" 
-              value={dpPercent} 
-              onChange={(e) => setDpPercent(Number(e.target.value))}
-              className="w-full accent-[#D94116]"
-            />
-            <div className="flex justify-between text-sm">
-              <span>0%</span>
-              <span className="font-bold text-[#D94116]">{dpPercent}%</span>
-              <span>50%</span>
-            </div>
-            <p className="text-xs text-gray-500">Estimasi DP: {formatRupiah(price * (dpPercent/100))}</p>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Jangka Waktu (Tahun)</label>
-            <select 
-              value={years} 
-              onChange={(e) => setYears(Number(e.target.value))}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#14305D] outline-none"
-            >
-              <option value="5">5 Tahun</option>
-              <option value="10">10 Tahun</option>
-              <option value="15">15 Tahun</option>
-              <option value="20">20 Tahun</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="bg-[#EAF0F9] p-6 rounded-xl flex flex-col justify-center items-center text-center">
-          <p className="text-gray-600 font-medium mb-2">Estimasi Angsuran per Bulan</p>
-          <p className="text-3xl md:text-4xl font-bold text-[#14305D] mb-2">
-            {formatRupiah(monthlyPayment)}
-          </p>
-          <p className="text-xs text-gray-500 mb-4">*Simulasi estimasi margin {margin}% (Flat/Murabahah)</p>
-          <a 
-            href={waLink}
-            target="_blank"
-            rel="noopener noreferrer" 
-            className="bg-[#D94116] text-white px-6 py-2 rounded-lg text-sm font-bold hover:bg-[#B8360F] transition w-full"
-          >
-            Konsultasi KPR Sekarang
-          </a>
-        </div>
-      </div>
-    </div>
-  );
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
 };
 
-// --- MAIN PAGE COMPONENT ---
-const MahakaryaLanding = () => {
-  const [currentLocSlide, setCurrentLocSlide] = useState(0);
-  const [currentUnitSlide, setCurrentUnitSlide] = useState(0);
-  const [isScrolled, setIsScrolled] = useState(false);
+const primaryBtn =
+  "button-md inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-3 py-2 text-white transition duration-300 ease-base hover:bg-accent-hover active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
 
-  // Auto-rotate Location carousel
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentLocSlide((prev) => (prev + 1) % locationImages.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, []);
-
-  // Auto-rotate Unit Gallery carousel
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentUnitSlide((prev) => (prev + 1) % unitGallery.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, []);
-
-  // Sticky header
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
+function SectionHead({ eyebrow, title, desc, light = false }: { eyebrow: string; title: string; desc?: string; light?: boolean }) {
   return (
-    <div className="min-h-screen bg-white font-sans text-[#4F5050]">
-      
-      {/* Sticky Header */}
-      <nav className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-[#14305D] shadow-lg py-2' : 'bg-transparent py-4'}`}>
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-lg flex items-center justify-center shadow-md">
-              <Home className="w-6 h-6 md:w-8 md:h-8 text-[#14305D]" />
+    <div className="mb-12 max-w-[680px]">
+      <p className={`caption-3 mb-3 uppercase tracking-widest ${light ? "text-orange-300" : "text-accent"}`}>{eyebrow}</p>
+      <h2 className={`heading-4 md:heading-3 ${light ? "text-white" : "text-ink"}`}>{title}</h2>
+      {desc && <p className={`body-3 mt-4 ${light ? "text-white/70" : "text-ink-soft"}`}>{desc}</p>}
+    </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <>
+      <Nav />
+      <main id="main">
+        {/* Hero */}
+        <section id="home" className="relative flex min-h-[100svh] items-end overflow-hidden bg-navy-deep">
+          <Image src="/fasad.png" alt="Fasad rumah Shraya Living bergaya Art Deco" fill priority sizes="100vw" className="object-cover" />
+          <div className="absolute inset-0 bg-navy-deep/70" />
+          <div className="relative mx-auto w-full max-w-6xl px-4 pb-16 pt-32 md:pb-24">
+            <div>
+              <p className="caption-3 mb-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 uppercase tracking-widest text-white/80 backdrop-blur">
+                <MapPin size={14} weight="fill" /> Kenali Besar, Jambi
+              </p>
+              <h1 className="heading-3 md:heading-2 max-w-[680px] bg-gradient-to-r from-white to-[#9B9B9B] bg-clip-text pb-2 text-transparent">
+                Cluster mewah
+                <br />
+                paling dekat <span className="whitespace-nowrap">dari UNJA</span>
+              </h1>
+              <p className="body-3 md:title-1 mt-6 max-w-[680px] text-white/80 md:font-normal">
+                Rumah 2 kamar bergaya Art Deco, 10 menit dari UNJA dan Kompleks Perkantoran Gubernur. Harga mulai Rp400 jutaan dengan skema KPR Syariah.
+              </p>
+              <div className="mt-8 flex flex-col gap-6 sm:flex-row sm:items-center">
+                <a href={waLink} target="_blank" rel="noopener noreferrer" className={`${primaryBtn} button-lg px-6 py-3`}>
+                  <WhatsappLogo size={22} weight="fill" /> Jadwalkan survey lokasi
+                </a>
+                <ul className="flex flex-wrap gap-x-6 gap-y-2 text-white/80">
+                  {["Legalitas SHM", "KPR Syariah tanpa riba", "Bebas banjir"].map((p) => (
+                    <li key={p} className="body-5 flex items-center gap-2">
+                      <CheckCircle size={18} weight="fill" className="text-orange-300" /> {p}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
-            <span className={`font-bold text-xl md:text-2xl transition-colors ${isScrolled ? 'text-white' : 'text-white drop-shadow-md'}`}>
-              Mahakarya Residence
-            </span>
           </div>
-          
-          <div className="hidden md:flex space-x-6 text-white font-medium">
-            <a href="#home" className="hover:text-[#D94116] transition drop-shadow-md">Home</a>
-            <a href="#unit-spec" className="hover:text-[#D94116] transition drop-shadow-md">Tipe Unit</a>
-            <a href="#projects" className="hover:text-[#D94116] transition drop-shadow-md">Projects</a>
-            <a href="#location" className="hover:text-[#D94116] transition drop-shadow-md">Location</a>
-            <a href="#contact" className="hover:text-[#D94116] transition drop-shadow-md">Contact</a>
-          </div>
+        </section>
 
-          <a href={waLink} target="_blank" rel="noopener noreferrer" className="bg-[#D94116] text-white px-4 md:px-6 py-2 rounded-lg font-semibold hover:bg-[#B8360F] transition shadow-lg">
-            Hubungi Kami
-          </a>
-        </div>
-      </nav>
-
-      {/* Section 1: Hero */}
-      <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <Image 
-            src="/fasadmahakarya.png"
-            alt="Mahakarya Residence Facade"
-            fill
-            className="object-cover"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#14305D]/90 to-[#14305D]/60"></div>
-        </div>
-
-        <div className="relative z-10 text-center text-white px-4 max-w-5xl mx-auto mt-16">
-          <div className="animate-fade-in-up">
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight drop-shadow-lg font-heading">
-              CLUSTER MEWAH TERMURAH<br />PALING DEKAT DARI UNJA
-            </h1>
-            <p className="text-lg md:text-2xl mb-8 font-light drop-shadow-md max-w-3xl mx-auto">
-              Cluster dengan Lokasi Paling Strategis!<br />
-              Hanya 10 Menit dari UNJA dan Kompleks Perkantoran Gubernur
-            </p>
-            <a 
-              href={waLink} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-block bg-[#D94116] text-white px-10 py-4 rounded-lg text-lg font-bold hover:bg-[#B8360F] transition transform hover:scale-105 shadow-2xl"
-            >
-              Survey Lokasi Sekarang
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* Section 1.5: Unit Specifications & Gallery */}
-      <section id="unit-spec" className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-[#14305D] mb-4">
-              Mahakarya Residence
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Dirancang dengan detail untuk kenyamanan maksimal keluarga Anda. <br /> Perpaduan desain mewah Art Deco dan fungsionalitas modern.
-            </p>
-          </div>
-
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left Grid: Specifications */}
-            <div className="bg-[#F8FAFC] p-8 rounded-2xl shadow-lg border border-gray-100">
-              <h3 className="text-2xl font-bold text-[#14305D] mb-6 flex items-center">
-                <Home className="w-6 h-6 mr-2 text-[#D94116]" />
-                Detail Hunian
-              </h3>
-              <div className="grid sm:grid-cols-2 gap-6">
-                {unitSpecs.map((spec, idx) => {
-                  const Icon = spec.icon;
-                  return (
-                    <div key={idx} className="flex items-start space-x-4 p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition">
-                      <div className="bg-[#EAF0F9] p-3 rounded-lg">
-                        <Icon className="w-6 h-6 text-[#14305D]" />
-                      </div>
+        {/* Unit */}
+        <section id="unit" className="bg-surface-warm py-20 md:py-24">
+          <div className="mx-auto max-w-6xl px-4">
+            <Reveal>
+              <SectionHead
+                eyebrow="Tipe unit"
+                title="Rumah yang dirancang untuk keluarga kecil yang terus tumbuh"
+                desc="Perpaduan fasad Art Deco dengan tata ruang modern yang lapang. Spesifikasi lengkap di kelasnya, dengan harga yang tetap terjangkau."
+              />
+            </Reveal>
+            <div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-2">
+              <Reveal className="rounded-3xl border border-line bg-white p-2">
+                <dl className="grid grid-cols-2 gap-2">
+                  {unitSpecs.map(({ icon: Icon, label, value }) => (
+                    <div key={label} className="flex flex-col gap-3 rounded-2xl bg-surface-warm p-4">
+                      <Icon size={24} weight="duotone" className="text-navy" />
                       <div>
-                        <p className="text-sm text-gray-500 font-medium">{spec.label}</p>
-                        <p className="text-lg font-bold text-[#14305D]">{spec.value}</p>
+                        <dt className="caption-5 text-ink-soft">{label}</dt>
+                        <dd className="body-1 text-ink">{value}</dd>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
-              <div className="mt-8 p-4 bg-[#EAF0F9] rounded-xl text-center">
-                 <p className="text-[#14305D] font-semibold">
-                   *Spesifikasi termewah dengan harga unit rumah termurah dikelasnya.
-                 </p>
-              </div>
+                  ))}
+                </dl>
+              </Reveal>
+              <Reveal delay={120}>
+                <Carousel slides={unitGallery} label="Galeri unit" className="aspect-[4/3] w-full lg:aspect-auto lg:h-full lg:min-h-80" />
+              </Reveal>
             </div>
+          </div>
+        </section>
 
-            {/* Right Grid: Gallery Carousel */}
-            <div className="relative h-[500px] rounded-2xl overflow-hidden shadow-2xl group">
-              {unitGallery.map((item, idx) => (
-                <div
-                  key={idx}
-                  className={`absolute inset-0 transition-opacity duration-1000 ${
-                    idx === currentUnitSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
-                  }`}
+        <TaglineReveal />
+
+        {/* Keunggulan */}
+        <section id="keunggulan" className="bg-surface-warm py-20 md:py-24">
+          <div className="mx-auto max-w-6xl px-4">
+            <Reveal>
+              <SectionHead eyebrow="Keunggulan" title={`Kenapa keluarga memilih ${brand}`} />
+            </Reveal>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {features.map(({ icon: Icon, title, desc }, idx) => (
+                <Reveal
+                  key={title}
+                  delay={(idx % 3) * 80}
+                  className="group rounded-3xl border border-line bg-white p-6 transition-transform duration-500 ease-base hover:-translate-y-1"
                 >
-                  <Image 
-                    src={item.src}
-                    alt={item.alt}
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
-                    <p className="text-white text-lg font-bold text-center">{item.alt}</p>
+                  <div className="mb-6 grid size-12 place-items-center rounded-2xl bg-navy/10 text-navy transition-colors duration-300 group-hover:bg-navy group-hover:text-white">
+                    <Icon size={24} weight="duotone" />
                   </div>
-                </div>
+                  <h3 className="title-2 text-ink">{title}</h3>
+                  <p className="body-6 mt-2 text-ink-soft">{desc}</p>
+                </Reveal>
               ))}
-
-              <button 
-                onClick={() => setCurrentUnitSlide((prev) => (prev - 1 + unitGallery.length) % unitGallery.length)}
-                className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 p-2 rounded-full backdrop-blur-sm text-white transition opacity-0 group-hover:opacity-100"
-              >
-                <ChevronLeft size={24} />
-              </button>
-              <button 
-                onClick={() => setCurrentUnitSlide((prev) => (prev + 1) % unitGallery.length)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 p-2 rounded-full backdrop-blur-sm text-white transition opacity-0 group-hover:opacity-100"
-              >
-                <ChevronRight size={24} />
-              </button>
-
-               <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
-                {unitGallery.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setCurrentUnitSlide(idx)}
-                    className={`w-2 h-2 rounded-full transition-all ${
-                      idx === currentUnitSlide ? 'bg-[#D94116] w-6' : 'bg-white/50 hover:bg-white'
-                    }`}
-                  />
-                ))}
-              </div>
+              <Reveal className="flex flex-col justify-between gap-6 rounded-3xl bg-navy p-6 text-white sm:col-span-2 lg:col-span-2">
+                <p className="heading-6">Konsultasi gratis, tanpa kewajiban membeli.</p>
+                <a href={waLink} target="_blank" rel="noopener noreferrer" className={`${primaryBtn} self-start`}>
+                  <WhatsappLogo size={20} weight="fill" /> Tanya lewat WhatsApp
+                </a>
+              </Reveal>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Section 2: USP - Strategic Location */}
-      <section id="location" className="py-20 bg-[#EAF0F9]">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#14305D] text-center mb-12">
-            Mengapa Harus Pilih Rumah dengan Lokasi Strategis?
-          </h2>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {uspPoints.map((point, idx) => (
-              <div key={idx} className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition duration-300 border-l-4 border-[#D94116]">
-                <div className="flex items-start space-x-3">
-                  <CheckCircle className="w-6 h-6 text-[#D94116] flex-shrink-0 mt-1" />
-                  <div>
-                    <h3 className="text-[#14305D] font-bold text-lg mb-1">{point.title}</h3>
-                    <p className="text-gray-600 text-sm">{point.desc}</p>
-                  </div>
+        {/* Lokasi */}
+        <section id="lokasi" className="bg-white py-20 md:py-24">
+          <div className="mx-auto max-w-6xl px-4">
+            <Reveal>
+              <SectionHead
+                eyebrow="Lokasi"
+                title="Semua kebutuhan harian dalam radius 10 menit"
+                desc="Berada di Kenali Besar, Kota Baru, kawasan yang dekat dengan pusat pendidikan, pemerintahan, dan kesehatan di Jambi."
+              />
+            </Reveal>
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
+              <Reveal className="lg:col-span-3">
+                <Carousel slides={locationImages} label="Tempat penting di sekitar lokasi" className="aspect-video" sizes="(min-width: 1024px) 60vw, 100vw" />
+              </Reveal>
+              <Reveal delay={120} className="flex flex-col gap-6 lg:col-span-2">
+                <ul className="flex flex-col gap-4">
+                  {uspPoints.map((p) => (
+                    <li key={p.title} className="flex gap-3">
+                      <CheckCircle size={22} weight="fill" className="mt-0.5 shrink-0 text-accent" />
+                      <div>
+                        <p className="title-3 text-ink">{p.title}</p>
+                        <p className="body-6 text-ink-soft">{p.desc}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                <div>
+                  <p className="caption-3 mb-3 uppercase tracking-widest text-ink-soft">Di sekitar Anda</p>
+                  <ul className="flex flex-wrap gap-2">
+                    {nearby.map((n) => (
+                      <li key={n} className="caption-1 rounded-full border border-line px-3 py-1 text-ink">
+                        {n}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
+              </Reveal>
+            </div>
+          </div>
+        </section>
+
+        {/* Harga */}
+        <section id="harga" className="bg-navy-deep py-20 text-white md:py-24">
+          <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-4 xl:grid-cols-5">
+            <Reveal className="xl:col-span-2">
+              <SectionHead
+                light
+                eyebrow="Harga"
+                title="Termewah di kelasnya, dengan harga yang masuk akal"
+                desc="Hitung sendiri estimasi cicilan bulanan Anda, lalu konsultasikan angka finalnya dengan tim kami."
+              />
+              <div className="rounded-3xl border border-white/15 p-6">
+                <p className="caption-3 uppercase tracking-widest text-orange-300">Harga mulai</p>
+                <p className="heading-3 md:heading-2 mt-2 tabular-nums">Rp400 jutaan</p>
+                <p className="caption-5 mt-3 text-white/60">Syarat dan ketentuan berlaku.</p>
               </div>
-            ))}
+            </Reveal>
+            <Reveal delay={120} className="text-ink xl:col-span-3">
+              <MortgageCalculator />
+            </Reveal>
           </div>
+        </section>
 
-          <div className="text-center mt-12">
-            <a 
-              href={waLink} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-block bg-[#14305D] text-white px-10 py-4 rounded-lg text-lg font-bold hover:bg-[#0F2447] transition transform hover:scale-105 shadow-lg"
-            >
-              Survey Lokasi via WhatsApp
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* Section 3: Image Gallery Carousel (Location) */}
-      <section id="projects" className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="relative max-w-5xl mx-auto">
-            <div className="overflow-hidden rounded-2xl shadow-2xl aspect-video relative">
-              {locationImages.map((loc, idx) => (
-                <div
-                  key={idx}
-                  className={`absolute inset-0 transition-opacity duration-1000 ${
-                    idx === currentLocSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
-                  }`}
-                >
-                  <Image 
-                    src={loc.img} 
-                    alt={loc.name} 
-                    fill
-                    className="object-cover"
-                    // Removed unoptimized to let Next.js handle it if properly configured
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end">
-                    <div className="p-8 text-white">
-                      <h3 className="text-2xl font-bold">{loc.name}</h3>
-                      <p className="text-sm opacity-90">Lokasi strategis dekat hunian</p>
-                    </div>
-                  </div>
-                </div>
+        {/* FAQ */}
+        <section id="faq" className="bg-surface-warm py-20 md:py-24">
+          <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-4 lg:grid-cols-5">
+            <Reveal className="lg:col-span-2">
+              <SectionHead eyebrow="FAQ" title="Pertanyaan yang sering ditanyakan" desc="Belum menemukan jawabannya? Tanyakan langsung lewat WhatsApp." />
+            </Reveal>
+            <Reveal delay={120} className="flex flex-col gap-2 lg:col-span-3">
+              {faqs.map((f) => (
+                <details key={f.q} className="group rounded-2xl border border-line bg-white open:shadow-sm">
+                  <summary className="title-3 flex cursor-pointer list-none items-center justify-between gap-4 rounded-2xl p-4 text-ink focus-visible:outline-2 focus-visible:outline-navy md:p-6 [&::-webkit-details-marker]:hidden">
+                    {f.q}
+                    <Plus size={20} className="shrink-0 text-ink-soft transition-transform duration-500 ease-base group-open:rotate-45" />
+                  </summary>
+                  <p className="body-6 px-4 pb-4 text-ink-soft md:px-6 md:pb-6">{f.a}</p>
+                </details>
               ))}
-              
-              <button 
-                onClick={() => setCurrentLocSlide((prev) => (prev - 1 + locationImages.length) % locationImages.length)}
-                className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 p-2 rounded-full backdrop-blur-sm text-white transition"
-              >
-                <ChevronLeft size={32} />
-              </button>
-              <button 
-                onClick={() => setCurrentLocSlide((prev) => (prev + 1) % locationImages.length)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 p-2 rounded-full backdrop-blur-sm text-white transition"
-              >
-                <ChevronRight size={32} />
-              </button>
-            </div>
-            
-            <div className="text-center mt-8">
-              <p className="text-gray-600 mb-4">Lihat langsung kualitas bangunan kami</p>
-              <a 
-                href={waLink} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-block border-2 border-[#D94116] text-[#D94116] px-8 py-3 rounded-lg font-bold hover:bg-[#D94116] hover:text-white transition"
-              >
-                Jadwalkan Survey Lokasi
-              </a>
-            </div>
+            </Reveal>
           </div>
-        </div>
-      </section>
+          <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+        </section>
 
-      {/* Section 4: Pricing */}
-      <section className="py-20 bg-[#14305D] text-white relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <h2 className="text-3xl md:text-5xl font-bold mb-4">
-            Mahakarya Residence
-          </h2>
-          <p className="text-xl md:text-2xl mb-10 font-light text-gray-300">
-            Termewah dan Termurah di Kelasnya
-          </p>
-          
-          <div className="inline-block bg-white text-[#14305D] p-1 rounded-2xl shadow-2xl transform hover:scale-105 transition duration-300">
-            <div className="border-2 border-[#14305D] border-dashed rounded-xl px-12 py-8">
-              <p className="text-lg mb-2 font-medium uppercase tracking-widest text-[#D94116]">Harga Mulai</p>
-              <p className="text-5xl md:text-7xl font-extrabold">400 JUTA-AN</p>
-              <p className="text-sm mt-4 text-gray-500">*Syarat dan ketentuan berlaku</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Section 5: Features & Value Prop */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#14305D] text-center mb-16">
-            Kenapa Harus Mahakarya Residence?
-          </h2>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            {features.map((feature, idx) => {
-              const Icon = feature.icon;
-              return (
-                <div 
-                  key={idx} 
-                  className="bg-[#F8FAFC] rounded-xl p-8 hover:bg-[#EAF0F9] transition duration-300 group border border-gray-100 hover:border-[#14305D]/20"
-                >
-                  <div className="bg-white w-14 h-14 rounded-full flex items-center justify-center mb-6 shadow-sm group-hover:bg-[#14305D] transition duration-300">
-                    <Icon className="w-7 h-7 text-[#14305D] group-hover:text-white transition duration-300" />
-                  </div>
-                  <h3 className="text-xl font-bold text-[#14305D] mb-3">{feature.title}</h3>
-                  <p className="text-[#4F5050] leading-relaxed">{feature.desc}</p>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="text-center mt-12">
-            <a 
-              href={waLink} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-flex items-center bg-[#25D366] text-white px-8 py-4 rounded-lg text-lg font-bold hover:bg-[#20bd5a] transition shadow-lg"
-            >
-              <Phone className="w-5 h-5 mr-2" />
-              Konsultasi GRATIS via WhatsApp
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* Section 6: Mortgage Simulator & Closing CTA */}
-      <section className="py-20 bg-gradient-to-b from-[#EAF0F9] to-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold text-[#14305D] mb-4">
-              Hitung Cicilan Rumah Impian Anda
-            </h2>
-            <p className="text-gray-600">Gunakan kalkulator di bawah ini untuk estimasi angsuran KPR Syariah.</p>
-          </div>
-          
-          <MortgageCalculator />
-
-          <div className="mt-20 bg-[#D94116] rounded-3xl p-8 md:p-12 text-center text-white shadow-2xl max-w-5xl mx-auto relative overflow-hidden">
-            <div className="relative z-10">
-              <p className="text-xl md:text-2xl mb-4 font-bold bg-white/20 inline-block px-6 py-2 rounded-full animate-pulse">
-                ⚠️ Hanya 8 Unit Tersisa!
-              </p>
-              <h2 className="text-3xl md:text-5xl font-bold mb-8 leading-tight">
-                Konsultasi Gratis Sekarang dan Dapatkan<br className="hidden md:block"/>
-                Penawaran Terbaik Mahakarya Residence!
-              </h2>
-              <a 
-                href={waLink} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-block bg-white text-[#D94116] px-12 py-5 rounded-lg text-xl font-bold hover:bg-gray-100 transition transform hover:scale-105 shadow-xl"
-              >
-                🎁 Dapatkan PROMO
-              </a>
-            </div>
-            <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-              <div className="w-64 h-64 bg-black rounded-full absolute -top-10 -left-10"></div>
-              <div className="w-64 h-64 bg-black rounded-full absolute -bottom-10 -right-10"></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Section 7: Footer & Contact */}
-      <footer id="contact" className="bg-[#14305D] text-white pt-16 pb-8">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-            
-            {/* Brand Info */}
-            <div className="lg:col-span-1">
-              <div className="flex items-center space-x-2 mb-6">
-                <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
-                  <Home className="w-6 h-6 text-[#14305D]" />
-                </div>
-                <span className="font-bold text-xl">Mahakarya<br/>Residence</span>
+        {/* Final CTA */}
+        <section className="bg-surface-warm pb-20 md:pb-24">
+          <div className="mx-auto max-w-6xl px-4">
+            <Reveal className="flex flex-col items-start gap-6 rounded-3xl bg-accent p-8 text-white md:flex-row md:items-center md:justify-between md:p-12">
+              <div className="max-w-[680px]">
+                <p className="caption-3 mb-3 inline-block rounded-full bg-white/15 px-3 py-1 uppercase tracking-widest">Hanya 8 unit tersisa</p>
+                <h2 className="heading-4 md:heading-3">Lihat langsung unitnya sebelum kehabisan</h2>
+                <p className="body-3 mt-3 text-white/80">Konsultasi gratis dan dapatkan penawaran terbaik untuk unit {brand}.</p>
               </div>
-              <p className="text-gray-300 text-sm leading-relaxed mb-6">
-                Hunian mewah dengan harga terjangkau di lokasi paling strategis Jambi. Investasi terbaik untuk masa depan keluarga Anda.
-              </p>
-              <div className="flex space-x-4">
-                <a href="#" className="hover:text-[#D94116] transition"><Facebook size={20} /></a>
-                <a href="#" className="hover:text-[#D94116] transition"><Instagram size={20} /></a>
-              </div>
-            </div>
+              <a
+                href={waLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="button-lg inline-flex shrink-0 items-center gap-2 rounded-xl bg-white px-6 py-3 text-accent transition duration-300 ease-base hover:bg-white/90 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              >
+                <WhatsappLogo size={22} weight="fill" /> Jadwalkan survey lokasi
+              </a>
+            </Reveal>
+          </div>
+        </section>
+      </main>
 
-            {/* Contact Info */}
-            <div className="lg:col-span-1">
-              <h3 className="font-bold text-lg mb-6 border-b border-gray-600 pb-2 inline-block">Hubungi Kami</h3>
-              <ul className="space-y-4 text-sm text-gray-300">
-                <li className="flex items-start space-x-3">
-                  <MapPin className="w-5 h-5 flex-shrink-0 text-[#D94116]" />
-                  <span>Lorong Bougenvil Lestari, Kenali Besar, Kota Baru, Jambi 36361</span>
+      {/* Footer */}
+      <footer id="kontak" className="bg-navy-deep pb-8 pt-16 text-white">
+        <div className="mx-auto max-w-6xl px-4">
+          <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
+            <div>
+              <div className="mb-4 flex items-center gap-2">
+                <Logo light className="size-9" />
+                <span className="title-1">{brand}</span>
+              </div>
+              <p className="body-6 text-white/60">
+                Hunian berkualitas dengan harga terjangkau di lokasi strategis Kota Jambi. Investasi untuk masa depan keluarga Anda.
+              </p>
+            </div>
+            <div>
+              <h3 className="title-3 mb-4">Hubungi kami</h3>
+              <ul className="body-6 flex flex-col gap-4 text-white/70">
+                <li className="flex gap-3">
+                  <MapPin size={20} className="shrink-0 text-orange-300" />
+                  <span>{address}</span>
                 </li>
-                <li className="flex items-center space-x-3">
-                  <Phone className="w-5 h-5 flex-shrink-0 text-[#D94116]" />
-                  <span>+62 853-7734-7995</span>
-                </li>
-                <li className="flex items-center space-x-3">
-                  <Mail className="w-5 h-5 flex-shrink-0 text-[#D94116]" />
-                  <span>info@mahakaryaresidence.com</span>
+                <li>
+                  <a href={waLink} target="_blank" rel="noopener noreferrer" className="flex gap-3 transition-colors duration-300 hover:text-white">
+                    <Phone size={20} className="shrink-0 text-orange-300" />
+                    {phoneDisplay}
+                  </a>
                 </li>
               </ul>
             </div>
-
-            {/* Map Integration */}
             <div className="lg:col-span-2">
-              <h3 className="font-bold text-lg mb-6 border-b border-gray-600 pb-2 inline-block">Lokasi Proyek</h3>
-              <div className="w-full h-48 bg-gray-700 rounded-lg overflow-hidden shadow-lg border border-gray-600">
-                <iframe 
-                  width="100%" 
-                  height="100%" 
+              <h3 className="title-3 mb-4">Lokasi proyek</h3>
+              <div className="h-48 overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+                <iframe
+                  title={`Peta lokasi ${brand}`}
+                  width="100%"
+                  height="100%"
                   style={{ border: 0 }}
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.2017160053824!2d103.54515417479128!3d-1.6310887983537428!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e258762995df6a1%3A0x324e4820b8d78e91!2sPerumahan%20Mahakarya%20Residence!5e0!3m2!1sid!2sid!4v1767439233439!5m2!1sid!2sid"
-                  className="filter grayscale hover:grayscale-0 transition duration-500"
+                  src={mapsEmbed}
+                  className="grayscale transition duration-500 ease-base hover:grayscale-0"
                   allowFullScreen
-                  loading="lazy" 
+                  loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                ></iframe>
+                />
               </div>
-              <a 
-                href="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.2017160053824!2d103.54515417479128!3d-1.6310887983537428!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e258762995df6a1%3A0x324e4820b8d78e91!2sPerumahan%20Mahakarya%20Residence!5e0!3m2!1sid!2sid!4v1767439233439!5m2!1sid!2sid" 
+              <a
+                href={mapsLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-[#D94116] hover:text-white mt-2 inline-block transition"
+                className="caption-1 mt-3 inline-flex items-center gap-1 text-orange-300 transition-colors duration-300 hover:text-white"
               >
-                Buka di Google Maps →
+                Buka di Google Maps <ArrowUpRight size={14} />
               </a>
             </div>
           </div>
-
-          <div className="border-t border-white/10 pt-8 text-center">
-            <p className="text-gray-400 text-sm">
-              © 2026 Mahakarya Residence. All Rights Reserved.
-            </p>
+          <div className="caption-5 mt-12 border-t border-white/10 pt-8 text-center text-white/50">
+            © 2026 {brand}. Seluruh hak cipta dilindungi.
           </div>
         </div>
       </footer>
-    </div> // <--- THIS WAS MISSING
+    </>
   );
-};
-
-export default MahakaryaLanding;
+}
